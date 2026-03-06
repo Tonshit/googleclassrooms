@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Google Classroom - My Classes</title>
+<link rel="icon" href="logo.png">
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Roboto', Arial, sans-serif;
+}
+
+body{
+  background:#f1f3f4;
+  overflow-x:hidden;
+  position:relative;
+}
+
+/* BACKGROUND SHAPES */
+body::before,
+body::after{
+  content:"";
+  position:absolute;
+  width:400px;
+  height:400px;
+  background:rgba(26,115,232,0.08);
+  border-radius:50%;
+  z-index:0;
+  animation:float 15s infinite linear;
+}
+
+body::before{
+  top:-150px;
+  left:-100px;
+}
+
+body::after{
+  bottom:-150px;
+  right:-100px;
+  animation-delay:7s;
+}
+
+@keyframes float{
+  0%{transform:translateY(0) rotate(0deg);}
+  50%{transform:translateY(50px) rotate(180deg);}
+  100%{transform:translateY(0) rotate(360deg);}
+}
+
+/* NAVBAR */
+.navbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  height:64px;
+  padding:0 24px;
+  background:white;
+  box-shadow:0 1px 3px rgba(0,0,0,0.1);
+  position:sticky;
+  top:0;
+  z-index:10;
+}
+
+.nav-left{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  font-weight:500;
+  font-size:20px;
+  color:#202124;
+}
+
+.nav-left img{
+  width:36px;
+}
+
+.nav-right{
+  display:flex;
+  align-items:center;
+  gap:16px;
+  position:relative;
+}
+
+.nav-right .icon{
+  font-size:22px;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.nav-right .icon:hover{
+  transform:scale(1.2);
+}
+
+.profile{
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  background:#1a73e8;
+  color:white;
+  font-weight:bold;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  cursor:pointer;
+  position:relative;
+}
+
+/* Dropdown */
+.dropdown{
+  position:absolute;
+  top:50px;
+  right:0;
+  background:white;
+  border-radius:8px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.15);
+  display:none;
+  flex-direction:column;
+  min-width:160px;
+  overflow:hidden;
+  z-index:5;
+}
+
+.dropdown.active{
+  display:flex;
+}
+
+.dropdown button{
+  border:none;
+  background:none;
+  padding:12px 16px;
+  text-align:left;
+  font-size:14px;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.dropdown button:hover{
+  background:#f1f3f4;
+}
+
+/* PAGE TITLE */
+.page-title{
+  padding:24px;
+  font-size:26px;
+  font-weight:500;
+  color:#202124;
+  z-index:1;
+  position:relative;
+}
+
+/* CLASS GRID - 3 per row */
+.container{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:24px;
+  padding:0 24px 40px 24px;
+  z-index:1;
+  position:relative;
+}
+
+/* CLASS CARD */
+.card{
+  background:white;
+  border-radius:12px;
+  overflow:hidden;
+  box-shadow:0 1px 3px rgba(0,0,0,0.12),0 1px 2px rgba(0,0,0,0.24);
+  cursor:pointer;
+  display:flex;
+  flex-direction:column;
+  transition:0.4s;
+  position:relative;
+  z-index:1;
+  min-height:220px; /* Bigger cards */
+}
+
+.card:hover{
+  transform:translateY(-5px) scale(1.02);
+  box-shadow:0 8px 20px rgba(0,0,0,0.2);
+}
+
+/* Banner */
+.banner{
+  height:140px;
+  background-size:cover;
+  background-position:center;
+  padding:12px;
+  color:white;
+  font-weight:500;
+  font-size:20px;
+  display:flex;
+  align-items:flex-end;
+  text-shadow:0 1px 2px rgba(0,0,0,0.5);
+}
+
+/* Content */
+.content{
+  padding:12px;
+  font-size:14px;
+  color:#202124;
+  flex-grow:1;
+}
+
+.assignment{
+  margin-top:6px;
+  font-size:13px;
+  color:#5f6368;
+}
+
+/* RESPONSIVE */
+@media(max-width:1024px){
+  .container{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+
+@media(max-width:700px){
+  .container{
+    grid-template-columns:1fr;
+    padding:0 16px 30px 16px;
+  }
+}
+
+/* FLOATING PLUS BUTTON */
+.fab{
+  position:fixed;
+  bottom:24px;
+  left:24px;
+  width:56px;
+  height:56px;
+  border-radius:50%;
+  background:#1a73e8;
+  color:white;
+  font-size:32px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  cursor:pointer;
+  box-shadow:0 4px 12px rgba(0,0,0,0.25);
+  z-index:15;
+  transition:0.3s;
+}
+
+.fab:hover{
+  background:#1669c1;
+  transform:scale(1.1);
+}
+
+/* FAB MENU */
+.fab-menu{
+  position:fixed;
+  bottom:90px;
+  left:24px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  z-index:14;
+  display:none;
+}
+
+.fab-menu.active{
+  display:flex;
+}
+
+.fab-menu button{
+  padding:10px 14px;
+  border:none;
+  border-radius:6px;
+  background:white;
+  box-shadow:0 2px 8px rgba(0,0,0,0.2);
+  cursor:pointer;
+  transition:0.2s;
+  font-weight:500;
+}
+
+.fab-menu button:hover{
+  background:#f1f3f4;
+}
+</style>
+</head>
+<body>
+
+<div class="navbar">
+  <div class="nav-left">
+    <img src="logo.png" alt="Logo">
+    Classroom
+  </div>
+  <div class="nav-right">
+    <span class="icon">🔔</span>
+    <div class="profile" id="profileBtn">S</div>
+    <div class="dropdown" id="dropdownMenu">
+      <button onclick="logout()">Log out</button>
+    </div>
+  </div>
+</div>
+
+<div class="page-title">My Classes</div>
+
+<div class="container">
+
+  <!-- Web Development -->
+  <div class="card">
+    <div class="banner" style="background-image:url('https://images.unsplash.com/photo-1498050108023-c5249f4df085');">
+      Web Development
+    </div>
+    <div class="content">
+      Build a website project
+      <div class="assignment">
+        Assignment due this Friday
+      </div>
+    </div>
+  </div>
+
+  <!-- Networking -->
+  <div class="card">
+    <div class="banner" style="background-image:url('https://images.unsplash.com/photo-1518770660439-4636190af475');">
+      Networking
+    </div>
+    <div class="content">
+      Networking fundamentals
+      <div class="assignment">
+        Quiz next Monday
+      </div>
+    </div>
+  </div>
+
+  <!-- Cybersecurity -->
+  <div class="card">
+    <div class="banner" style="background-image:url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b');">
+      Cybersecurity
+    </div>
+    <div class="content">
+      Phishing awareness lesson
+      <div class="assignment">
+        Read the module and answer activity
+      </div>
+    </div>
+  </div>
+
+  <!-- Mathematics -->
+  <div class="card">
+    <div class="banner" style="background-image:url('https://images.squarespace-cdn.com/content/v1/5df299c65e4a5e604b11deb5/50f54ecc-c740-4341-a758-a4c4f9a8b890/antoine-dautry-05A-kdOH6Hw-unsplash.jpg');">
+      Mathematics
+    </div>
+    <div class="content">
+      Algebra and Calculus
+      <div class="assignment">
+        Homework due Thursday
+      </div>
+    </div>
+  </div>
+
+  <!-- Science -->
+  <div class="card">
+    <div class="banner" style="background-image:url('https://www.eurokidsindia.com/blog/wp-content/uploads/2024/02/science-exhibitions-870x570.jpg');">
+      Science
+    </div>
+    <div class="content">
+      Physics lab experiment
+      <div class="assignment">
+        Report due next Monday
+      </div>
+    </div>
+  </div>
+
+  <!-- English -->
+  <div class="card">
+    <div class="banner" style="background-image:url('https://images.unsplash.com/photo-1496307042754-b4aa456c4a2d');">
+      English
+    </div>
+    <div class="content">
+      Literature analysis
+      <div class="assignment">
+        Essay due Friday
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Floating Plus Button -->
+<div class="fab" id="fabBtn">+</div>
+<div class="fab-menu" id="fabMenu">
+  <button onclick="alert('Join class clicked')">Join class</button>
+  <button onclick="alert('Create class clicked')">Create class</button>
+</div>
+
+<script>
+// Profile dropdown toggle
+const profileBtn = document.getElementById("profileBtn");
+const dropdown = document.getElementById("dropdownMenu");
+profileBtn.addEventListener("click", () => {
+  dropdown.classList.toggle("active");
+});
+
+// Log out redirect
+function logout(){
+  window.location.href="index.html";
+}
+
+// Close dropdown when clicking outside
+document.addEventListener("click", function(event){
+  if(!profileBtn.contains(event.target) && !dropdown.contains(event.target)){
+    dropdown.classList.remove("active");
+  }
+});
+
+// FAB toggle
+const fabBtn = document.getElementById("fabBtn");
+const fabMenu = document.getElementById("fabMenu");
+fabBtn.addEventListener("click", ()=>{
+  fabMenu.classList.toggle("active");
+});
+</script>
+
+</body>
+</html>

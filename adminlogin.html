@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Hacker Login</title>
+<link rel="icon" href="logo.png">
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Courier New', monospace;
+}
+
+body{
+  background:#0c111b;
+  color:#4caf50;
+  overflow:hidden;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  position:relative;
+}
+
+/* Global Binary Background */
+#binaryCanvas{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  z-index:0;
+  background:#0c111b;
+}
+
+/* Grid overlay */
+#gridOverlay{
+  position:fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  z-index:0;
+  pointer-events:none;
+  background-image:
+    linear-gradient(rgba(76,175,80,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(76,175,80,0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Login container */
+.login-container{
+  position:relative;
+  z-index:1;
+  background:rgba(12,17,27,0.9);
+  border:1px solid #4caf50;
+  border-radius:12px;
+  padding:40px;
+  width:350px;
+  box-shadow:0 0 20px #4caf50 inset, 0 0 30px #4caf50;
+  backdrop-filter:blur(5px);
+  text-align:center;
+  animation: fadeIn 1s ease-in-out, flicker 1.5s infinite;
+  overflow:hidden;
+}
+
+/* Login Binary Canvas (inside form) */
+#loginBinary{
+  position:absolute;
+  top:0; left:0;
+  width:100%; height:100%;
+  z-index:0;
+  pointer-events:none;
+}
+
+/* Fake system scan console */
+.scan-console{
+  position:relative;
+  z-index:1;
+  background:rgba(0,0,0,0.6);
+  color:#4caf50;
+  font-size:12px;
+  padding:10px;
+  border:1px solid #4caf50;
+  border-radius:6px;
+  margin-bottom:20px;
+  height:70px;
+  overflow:hidden;
+  text-align:left;
+}
+
+/* Glitch header */
+.login-container h1{
+  position:relative;
+  z-index:1;
+  margin-bottom:20px;
+  font-size:28px;
+  color:#4caf50;
+  text-shadow: 0 0 5px #4caf50, 0 0 10px #4caf50, 0 0 20px #4caf50;
+  animation: glitch 1s infinite;
+}
+
+/* Input fields */
+.login-container input{
+  position:relative;
+  z-index:1;
+  width:100%;
+  padding:10px 15px;
+  margin:10px 0;
+  border:1px solid #4caf50;
+  border-radius:6px;
+  background:rgba(12,17,27,0.85);
+  color:#4caf50;
+  font-size:16px;
+  outline:none;
+  box-shadow:0 0 5px #4caf50 inset;
+  transition:0.3s;
+}
+
+.login-container input:focus{
+  box-shadow:0 0 15px #4caf50 inset, 0 0 10px #4caf50;
+  transform: scale(1.02);
+}
+
+/* Buttons */
+.login-container button{
+  position:relative;
+  z-index:1;
+  width:100%;
+  padding:10px 15px;
+  margin-top:20px;
+  border:none;
+  border-radius:6px;
+  background:#4caf50;
+  color:#0c111b;
+  font-weight:bold;
+  cursor:pointer;
+  box-shadow:0 0 10px #4caf50;
+  transition:0.3s;
+  animation: pulse 2s infinite;
+}
+
+.login-container button:hover{
+  background:#3e8e41;
+  box-shadow:0 0 20px #4caf50, 0 0 30px #3e8e41;
+  transform: scale(1.05);
+}
+
+/* Footer links */
+.login-container .footer{
+  position:relative;
+  z-index:1;
+  margin-top:15px;
+  font-size:12px;
+  color:#4caf50;
+  opacity:0.8;
+}
+
+.login-container .footer a{
+  color:#4caf50;
+  text-decoration:none;
+  transition:0.3s;
+}
+
+.login-container .footer a:hover{
+  text-decoration:underline;
+}
+
+/* Animations */
+@keyframes fadeIn{
+  0%{opacity:0; transform:translateY(-20px);}
+  100%{opacity:1; transform:translateY(0);}
+}
+
+@keyframes flicker{
+  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100%{opacity:1;}
+  20%, 22%, 24%, 55%{opacity:0.7;}
+}
+
+@keyframes glitch{
+  0%{text-shadow:0 0 5px #4caf50,0 0 10px #4caf50;}
+  20%{text-shadow:-2px 0 5px #4caf50,2px 2px 10px #4caf50;}
+  40%{text-shadow:2px -2px 5px #4caf50,-2px 2px 10px #4caf50;}
+  60%{text-shadow:-2px 2px 5px #4caf50,2px -2px 10px #4caf50;}
+  80%{text-shadow:2px 0 5px #4caf50,-2px 0 10px #4caf50;}
+  100%{text-shadow:0 0 5px #4caf50,0 0 10px #4caf50;}
+}
+
+@keyframes pulse{
+  0%, 100%{box-shadow:0 0 10px #4caf50;}
+  50%{box-shadow:0 0 20px #4caf50;}
+}
+</style>
+</head>
+<body>
+
+<canvas id="binaryCanvas"></canvas>
+<div id="gridOverlay"></div>
+
+<div class="login-container">
+  <canvas id="loginBinary"></canvas>
+  <div class="scan-console" id="scanConsole"></div>
+  <h1>SECURITY LOGIN</h1>
+  <input type="text" id="email" placeholder="Email">
+  <input type="password" id="password" placeholder="Password">
+  <button id="loginBtn">Login</button>
+  <div class="footer">
+    <a href="#">Forgot Password?</a>
+  </div>
+</div>
+
+<script>
+// Binary backgrounds
+const canvas = document.getElementById('binaryCanvas');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+const binaryChars = "01";
+const fontSize = 12;
+const columns = Math.floor(canvas.width / fontSize);
+const drops = Array(columns).fill(1);
+
+function drawBinary(){
+  ctx.fillStyle = 'rgba(12,17,27,0.05)';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle = '#4caf50';
+  ctx.font = fontSize + "px monospace";
+  for(let i=0;i<drops.length;i++){
+    const text = binaryChars.charAt(Math.floor(Math.random()*binaryChars.length));
+    ctx.fillText(text, i*fontSize, drops[i]*fontSize);
+    if(drops[i]*fontSize > canvas.height || Math.random()>0.975) drops[i]=0;
+    drops[i]++;
+  }
+  requestAnimationFrame(drawBinary);
+}
+drawBinary();
+window.addEventListener('resize', ()=>{
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
+
+// Login box binary
+const loginCanvas = document.getElementById('loginBinary');
+const lctx = loginCanvas.getContext('2d');
+loginCanvas.width = loginCanvas.offsetWidth;
+loginCanvas.height = loginCanvas.offsetHeight;
+const lColumns = Math.floor(loginCanvas.width / 12);
+const lDrops = Array(lColumns).fill(1);
+
+function drawLoginBinary(){
+  lctx.fillStyle = 'rgba(12,17,27,0.1)';
+  lctx.fillRect(0,0,loginCanvas.width,loginCanvas.height);
+  lctx.fillStyle = '#4caf50';
+  lctx.font = "12px monospace";
+  for(let i=0;i<lDrops.length;i++){
+    const text = binaryChars.charAt(Math.floor(Math.random()*binaryChars.length));
+    lctx.fillText(text, i*12, lDrops[i]*12);
+    if(lDrops[i]*12 > loginCanvas.height || Math.random()>0.95) lDrops[i]=0;
+    lDrops[i]++;
+  }
+  requestAnimationFrame(drawLoginBinary);
+}
+drawLoginBinary();
+window.addEventListener('resize', ()=>{
+  loginCanvas.width = loginCanvas.offsetWidth;
+  loginCanvas.height = loginCanvas.offsetHeight;
+});
+
+// Fake system scan console
+const scanConsole = document.getElementById('scanConsole');
+const scanLines = [
+  "Initializing security protocol...",
+  "Checking network ports...",
+  "Monitoring login attempts...",
+  "Decrypting access keys...",
+  "Firewall status: OK",
+  "Scanning memory...",
+  "Binary intrusion check: PASS",
+  "System integrity verified."
+];
+let lineIndex = 0;
+function updateScanConsole(){
+  scanConsole.innerHTML = "";
+  for(let i=0;i<5;i++){
+    const idx = (lineIndex + i) % scanLines.length;
+    scanConsole.innerHTML += scanLines[idx] + "<br>";
+  }
+  lineIndex = (lineIndex + 1) % scanLines.length;
+}
+setInterval(updateScanConsole, 1000);
+
+// Login function (no alert, no saving)
+function login(){
+  const email = document.getElementById('email').value;
+  const pass = document.getElementById('password').value;
+  if(email && pass){
+    window.location.href = 'admin.html';
+  }
+}
+
+// Add Enter key support
+document.getElementById('email').addEventListener('keypress', function(e){
+  if(e.key === 'Enter'){ login(); }
+});
+document.getElementById('password').addEventListener('keypress', function(e){
+  if(e.key === 'Enter'){ login(); }
+});
+document.getElementById('loginBtn').addEventListener('click', login);
+</script>
+
+</body>
+</html>
